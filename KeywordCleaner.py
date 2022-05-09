@@ -4,24 +4,32 @@ class Cleaner:
     # 1. remove non acii charicters
     # 2. strip each line
     # 3. remove tabs
-    # 4. remove + * ?"/&| () {} [].,$#%
-    # 5. removes duplicates
-    # 6. sorts by length
+    # 4. remove + * ?"/&|\() {} [].,$#%
+    # 5. removes duplicats
+    # 6. replaces large amounts of spaces with a single space
+    # 7. removes keyword "amp;" that can mess with dorking
+    # 8. replaces - and _ with a space
+    # 9. removes lines made up of purely numbers
+    # 10. sorts lines from smallest to largest
 
     def setup(self):
         # imports
         import easygui
+        from functools import partial
 
         global easygui
+        global partial
 
     def clean(self):
         file_path = easygui.fileopenbox()
 
         output = []
-        blacklisted = """+* ?"/&|(){}[].,$#%^@!"""
+        blacklisted = ["#", "+", "*", "?", '"', "/", "&", "|", "(", ")", "{", "}", "[", "]", ".", ",", "$", "%", "^", "@", "!", "<", ">", ";", ":"] # +* ?"/&|(){}[].,$#%^@!<>;:
 
-        with open("keyword_output.txt", "w") as output_file:
-            with open(file_path, "r") as input_file:
+        utf8open = partial(open, encoding="UTF-8")
+
+        with utf8open("keyword_output.txt", "w") as output_file:
+            with utf8open(file_path, "r") as input_file:
                 for line in input_file:
 
                     # Remove non ascii
@@ -37,10 +45,20 @@ class Cleaner:
 
                     line = line.replace("-", " ")
 
-                    for char in blacklisted.split():
+                    line = line.replace("\\", "")
+
+                    line = line.replace("  ", " ")
+
+                    line = line.replace("   ", " ")
+
+                    line = line.replace("    ", " ")
+
+                    line = line.replace("     ", " ")
+
+                    for char in blacklisted:
                         line = line.replace(char, "")
 
-                    if len(line) != 0 and line not in output:
+                    if len(line) != 0 and line not in output and "amp;" not in line and not line.isdecimal():
 
                         output.append(line)
 
