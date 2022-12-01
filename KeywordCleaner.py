@@ -11,16 +11,17 @@ class Cleaner:
     # 8. replaces - and _ with a space
     # 9. removes lines made up of purely numbers
     # 10. sorts lines from smallest to largest
+    # 11. removes lines that are less than 1 word long
+    # 12. removes lines that are longer than 3 words
+    # 13. removes words that are in the bad word list.
 
     def setup(self):
         # imports
         import easygui
-        from alive_progress import alive_bar
         from functools import partial
 
         global easygui
         global partial
-        global alive_bar
 
     def clean(self):
         file_path = easygui.fileopenbox()
