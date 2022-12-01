@@ -11,6 +11,9 @@ class Cleaner:
     # 8. replaces - and _ with a space
     # 9. removes lines made up of purely numbers
     # 10. sorts lines from smallest to largest
+    # 11. removes lines that are less than 1 word long
+    # 12. removes lines that are longer than 3 words
+    # 13. removes words that are in the bad word list.
 
     def setup(self):
         # imports
@@ -26,7 +29,7 @@ class Cleaner:
         output = []
         blacklisted = ["#", "+", "*", "?", '"', "/", "&", "|", "(", ")", "{", "}", "[", "]", ".", ",", "$", "%", "^", "@", "!", "<", ">", ";", ":"] # +* ?"/&|(){}[].,$#%^@!<>;:
 
-        utf8open = partial(open, encoding="UTF-8")
+        utf8open = partial(open, encoding="UTF-8", errors="ignore")
 
         with utf8open("keyword_output.txt", "w") as output_file:
             with utf8open(file_path, "r") as input_file:
@@ -64,8 +67,11 @@ class Cleaner:
 
                 output.sort(key=len)
 
+                bad_words = ["http", "www", "com"]
                 for line in output:
-                    output_file.write(line + "\n")
+                    if not any(bad_word in line for bad_word in bad_words):
+                        if line.count(" ") > 1 and line.count(" ") < 3:
+                            output_file.write(line + "\n")
 
 
     def __init__(self):
