@@ -15,10 +15,12 @@ class Cleaner:
     def setup(self):
         # imports
         import easygui
+        from alive_progress import alive_bar
         from functools import partial
 
         global easygui
         global partial
+        global alive_bar
 
     def clean(self):
         file_path = easygui.fileopenbox()
@@ -26,7 +28,7 @@ class Cleaner:
         output = []
         blacklisted = ["#", "+", "*", "?", '"', "/", "&", "|", "(", ")", "{", "}", "[", "]", ".", ",", "$", "%", "^", "@", "!", "<", ">", ";", ":"] # +* ?"/&|(){}[].,$#%^@!<>;:
 
-        utf8open = partial(open, encoding="UTF-8")
+        utf8open = partial(open, encoding="UTF-8", errors="ignore")
 
         with utf8open("keyword_output.txt", "w") as output_file:
             with utf8open(file_path, "r") as input_file:
@@ -64,8 +66,11 @@ class Cleaner:
 
                 output.sort(key=len)
 
+                bad_words = ["http", "www", "com"]
                 for line in output:
-                    output_file.write(line + "\n")
+                    if not any(bad_word in line for bad_word in bad_words):
+                        if line.count(" ") > 1 and line.count(" ") < 3:
+                            output_file.write(line + "\n")
 
 
     def __init__(self):
